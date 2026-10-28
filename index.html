@@ -1,0 +1,138 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>我们的空间</title>
+<style>
+  :root{
+    --ink:#3b2f4a; --ink-soft:#6d6280;
+    --pink:#ff8fb1; --lilac:#b9a7ff; --ok:#3fb27f;
+  }
+  *{box-sizing:border-box;margin:0;padding:0}
+  body{
+    min-height:100dvh; padding:28px 20px 40px;
+    font-family:-apple-system,"Segoe UI","PingFang SC","Microsoft YaHei",sans-serif;
+    color:var(--ink);
+    background:
+      radial-gradient(60% 50% at 15% 8%,  #ffe3ef 0%, transparent 60%),
+      radial-gradient(55% 45% at 85% 12%, #e7e2ff 0%, transparent 60%),
+      radial-gradient(70% 60% at 50% 100%,#dff4ff 0%, transparent 65%),
+      linear-gradient(160deg,#fff6fa 0%,#f7f4ff 50%,#f2fbff 100%);
+    display:flex; flex-direction:column; align-items:center;
+  }
+  .wrap{width:min(760px,100%);}
+
+  header{text-align:center; padding:22px 0 30px}
+  .kicker{font-size:11px;letter-spacing:.34em;text-transform:uppercase;color:var(--ink-soft);opacity:.75}
+  h1{
+    margin-top:14px;
+    font-family:"Songti SC","STSong","SimSun",serif;
+    font-size:clamp(26px,6vw,36px); font-weight:600; letter-spacing:.06em;
+  }
+
+  .grid{display:grid; gap:16px; grid-template-columns:1fr}
+  @media(min-width:640px){ .grid{grid-template-columns:1fr 1fr} }
+
+  .card{
+    padding:26px 24px; border-radius:22px; text-align:center;
+    background:rgba(255,255,255,.62);
+    backdrop-filter:blur(16px); -webkit-backdrop-filter:blur(16px);
+    border:1px solid rgba(255,255,255,.75);
+    box-shadow:0 18px 44px -22px rgba(122,92,160,.35);
+  }
+  .card .label{font-size:11px;letter-spacing:.24em;color:var(--ink-soft);opacity:.8}
+  .card .big{
+    margin:14px 0 6px;
+    font-family:"Songti SC","STSong",serif;
+    font-size:clamp(38px,11vw,58px); line-height:1; color:var(--pink);
+  }
+  .card .sub{font-size:13px;color:var(--ink-soft);line-height:1.9;letter-spacing:.03em}
+
+  .soon{
+    display:inline-block; margin-top:14px; padding:6px 14px; border-radius:999px;
+    font-size:11px; letter-spacing:.14em; color:var(--ink-soft);
+    background:rgba(185,167,255,.16); border:1px dashed rgba(185,167,255,.55);
+  }
+
+  footer{
+    margin-top:26px; padding:16px 18px; border-radius:14px;
+    font-size:12px; line-height:2; color:var(--ink-soft);
+    background:rgba(255,255,255,.45); border:1px solid rgba(255,255,255,.7);
+  }
+  footer b{font-weight:600;color:var(--ink)}
+  .dot{display:inline-block;width:7px;height:7px;border-radius:50%;
+       background:var(--ok);margin-right:6px;vertical-align:1px;
+       box-shadow:0 0 0 3px rgba(63,178,127,.16)}
+  code{font-family:ui-monospace,Consolas,monospace;font-size:11.5px;
+       background:rgba(122,92,160,.08);padding:1px 6px;border-radius:5px}
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <header>
+    <div class="kicker">Our little place</div>
+    <h1>我们的空间</h1>
+  </header>
+
+  <div class="grid">
+    <section class="card">
+      <div class="label">在一起</div>
+      <!-- 日期确定后，这里的 — 会换成真实天数 -->
+      <div class="big" id="days">—</div>
+      <div class="sub">天<br><span style="opacity:.7">（等你告诉我日期）</span></div>
+    </section>
+
+    <section class="card">
+      <div class="label">留言墙</div>
+      <div class="big" style="font-size:clamp(28px,8vw,40px)">·</div>
+      <div class="sub">还没接通<br>下一版做</div>
+      <div class="soon">建设中</div>
+    </section>
+  </div>
+
+  <footer>
+    <div><span class="dot" id="status-dot"></span><b>部署自检</b>　—— 用来确认这个页面在哪跑</div>
+    <div>当前地址：<code id="href">…</code></div>
+    <div>现在时间：<b id="clock">…</b>　（每秒更新，走字说明页面是活的）</div>
+    <div>设备：<span id="device">…</span></div>
+  </footer>
+
+</div>
+
+<script>
+(function(){
+  var el = function(id){ return document.getElementById(id); };
+
+  // 实时时钟：秒数在动 = 脚本在跑
+  function tick(){
+    var d = new Date();
+    var p = function(n){ return n < 10 ? '0' + n : '' + n; };
+    el('clock').textContent = d.getFullYear() + '-' + p(d.getMonth()+1) + '-' + p(d.getDate())
+      + ' ' + p(d.getHours()) + ':' + p(d.getMinutes()) + ':' + p(d.getSeconds());
+  }
+  tick(); setInterval(tick, 1000);
+
+  // 当前地址：http(s) 开头 = 已经在公网上
+  var href = location.href;
+  el('href').textContent = href.length > 56 ? href.slice(0, 56) + '…' : href;
+  var isLocal = location.protocol === 'file:';
+  var dot = el('status-dot');
+  if (isLocal) {
+    dot.style.background = '#e0a030';
+    dot.style.boxShadow = '0 0 0 3px rgba(224,160,48,.18)';
+  }
+
+  // 简单设备信息
+  var d = navigator.userAgent;
+  var name = /iPhone|iPad|iPod/.test(d) ? 'iPhone / iPad'
+           : /Android/.test(d) ? 'Android'
+           : /Windows/.test(d) ? 'Windows'
+           : /Mac/.test(d) ? 'Mac' : '其他';
+  el('device').textContent = name + ' · ' + screen.width + '×' + screen.height
+    + ' · ' + (isLocal ? '本地文件' : location.protocol.replace(':',''));
+})();
+</script>
+</body>
+</html>
